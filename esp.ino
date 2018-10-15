@@ -5,11 +5,14 @@
 #include <ESP8266HTTPClient.h>
 #include <Servo.h>
 
+#define SERVO_PIN 14
+
 ESP8266WebServer HTTP(80);
 
 Servo myServo;
 
 void ConnectWiFi() {
+  WiFi.mode(WIFI_STA);
   WiFi.begin();
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
