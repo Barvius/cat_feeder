@@ -1,15 +1,11 @@
+#include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <DNSServer.h>
-#include <ESP8266WebServer.h>
 #include <ESP8266httpUpdate.h>
 #include <ESP8266HTTPClient.h>
-#include <Servo.h>
 
-#define SERVO_PIN 14
-
-ESP8266WebServer HTTP(80);
-
-Servo myServo;
+#include "http/Http.h"
+#include "hardware/Hardware.h"
 
 void ConnectWiFi() {
   WiFi.mode(WIFI_STA);
@@ -42,12 +38,15 @@ void UpdateFirmware() {
 
 void setup() {
   Serial.begin(115200);
+  Hardware::servoZero();
   ConnectWiFi();
+  // WiFi.mode(WIFI_AP_STA);
+  // WiFi.softAP(String("ESP_" + String(ESP.getChipId())).c_str(), String("ESP_" + String(ESP.getChipId())).c_str());
   UpdateFirmware();
-  HTTP_init();
+  HTTP::getInstance()->init();
 }
 
 void loop() {
-  HTTP.handleClient();
+  HTTP::getInstance()->handleClient();
   delay(1);
 }
