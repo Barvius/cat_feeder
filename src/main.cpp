@@ -3,9 +3,12 @@
 #include <DNSServer.h>
 #include <ESP8266httpUpdate.h>
 #include <ESP8266HTTPClient.h>
+#include <time.h>
 
 #include "http/Http.h"
 #include "hardware/Hardware.h"
+#include "servo/ServoController.h"
+// #include "timet.h"
 
 void ConnectWiFi() {
   WiFi.mode(WIFI_STA);
@@ -38,8 +41,9 @@ void UpdateFirmware() {
 
 void setup() {
   Serial.begin(115200);
-  Hardware::servoZero();
+  // Hardware::servoZero();
   ConnectWiFi();
+
   // WiFi.mode(WIFI_AP_STA);
   // WiFi.softAP(String("ESP_" + String(ESP.getChipId())).c_str(), String("ESP_" + String(ESP.getChipId())).c_str());
   UpdateFirmware();
@@ -48,5 +52,6 @@ void setup() {
 
 void loop() {
   HTTP::getInstance()->handleClient();
+  ServoController::getInstance()->loop();
   delay(1);
 }

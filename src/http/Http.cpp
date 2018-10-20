@@ -8,8 +8,10 @@ void HTTP::init(){
   this->http->on("/feed", std::bind(&HTTP::feed_handler, this));
   this->http->on("/available_networks", std::bind(&HTTP::available_networks_handler, this));
   // this->http->on("/wifi", std::bind(&HTTP::connect_handler, this));
+  this->http->on("/time", std::bind(&HTTP::time_handler, this));
   this->http->on("/restart", std::bind(&HTTP::restart_handler, this));
   this->http->begin();
+  timeSynch(3);
 }
 
 void HTTP::handleClient(){
@@ -18,20 +20,26 @@ void HTTP::handleClient(){
 
 void HTTP::feed_handler(){
   if (this->http->argName(0) == "amount") {
-      switch(this->http->arg("amount").toInt()){
-        case 5:
-          Hardware::servoOpen(3);
-        break;
-        case 10:
-          Hardware::servoOpen(6);
-        break;
-        case 15:
-          Hardware::servoOpen(9);
-        break;
-        default:
-          this->http->send(400, "text / plain", "Bad Request");
-      }
+    if(ServoController::getInstance()->feed(this->http->arg("amount").toInt())){
       this->http->send(200, "text / plain", "FEED OK");
+    }else{
+      this->http->send(400, "text / plain", "Bad Request");
+    }
+
+      // switch(this->http->arg("amount").toInt()){
+      //   case 5:
+      //     Hardware::servoOpen(3);
+      //   break;
+      //   case 10:
+      //     Hardware::servoOpen(6);
+      //   break;
+      //   case 15:
+      //     Hardware::servoOpen(9);
+      //   break;
+      //   default:
+      //     this->http->send(400, "text / plain", "Bad Request");
+      // }
+      // this->http->send(200, "text / plain", "FEED OK");
     } else {
       this->http->send(400, "text / plain", "Bad Request");
     }
@@ -66,6 +74,12 @@ void HTTP::restart_handler() {
   ESP.restart();
 }
 
+void HTTP::time_handler(){
+  // String json = "{";
+  // json += GetTime(GetUnixTime()).c_str();
+  // json+="}";
+  this->http->send(200, "text / plain", GetTime(GetUnixTime()).c_str());
+}
 // void HTTP::connect_handler() {
 //  if (this->http->argName(0) == "ssid" && this->http->argName(1) == "password") {
 //    // WiFi.mode(WIFI_STA);
