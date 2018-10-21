@@ -25,24 +25,9 @@ void HTTP::feed_handler(){
     }else{
       this->http->send(400, "text / plain", "Bad Request");
     }
-
-      // switch(this->http->arg("amount").toInt()){
-      //   case 5:
-      //     Hardware::servoOpen(3);
-      //   break;
-      //   case 10:
-      //     Hardware::servoOpen(6);
-      //   break;
-      //   case 15:
-      //     Hardware::servoOpen(9);
-      //   break;
-      //   default:
-      //     this->http->send(400, "text / plain", "Bad Request");
-      // }
-      // this->http->send(200, "text / plain", "FEED OK");
-    } else {
-      this->http->send(400, "text / plain", "Bad Request");
-    }
+  } else {
+    this->http->send(400, "text / plain", "Bad Request");
+  }
 }
 
 void HTTP::available_networks_handler(){

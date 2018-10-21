@@ -2,7 +2,7 @@
 
 void ServoController::loop(){
   if(this->feeding){
-    if(this->iteration > 0){
+    if(this->iteration >= 0){
       if(millis() - this->lastTime > 1000){
         if(this->open){
           this->servo.write(0);

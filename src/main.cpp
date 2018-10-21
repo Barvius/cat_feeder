@@ -8,7 +8,6 @@
 #include "http/Http.h"
 #include "hardware/Hardware.h"
 #include "servo/ServoController.h"
-// #include "timet.h"
 
 void ConnectWiFi() {
   WiFi.mode(WIFI_STA);
