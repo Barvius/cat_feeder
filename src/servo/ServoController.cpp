@@ -2,7 +2,7 @@
 
 void ServoController::loop(){
   if(this->feeding){
-    if(this->iteration >= 0){
+    if(this->iteration > 0){
       if(millis() - this->lastTime > 1000){
         if(this->open){
           this->servo.write(0);
@@ -23,13 +23,13 @@ void ServoController::loop(){
 boolean ServoController::feed(unsigned int weight){
   switch (weight) {
     case 5:
-    this->startFeed(6);
+    this->startFeed(7);
       return true;
     case 10:
-    this->startFeed(12);
+    this->startFeed(13);
       return true;
     case 15:
-    this->startFeed(18);
+    this->startFeed(19);
       return true;
     default:
       return false;
