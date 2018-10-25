@@ -2,16 +2,20 @@
 #define cron_h
 
 #include <vector>
+#include <ctime>
+#include <ESP8266HTTPClient.h>
 #include "Arduino.h"
-
 #include "Task.h"
+#include "../servo/ServoController.h"
 
 class Cron {
 private:
   std::vector<Task> task;
   unsigned long lastTickTime;
   boolean ntpTimeActive;
+  unsigned long ntpTimeCheck;
 
+  boolean checkTaskTime(Task,time_t);
   void readConfig();
   void writeConfig();
 
@@ -19,9 +23,15 @@ private:
   Cron();
 
 public:
+  void clear(){
+    this->task.clear();
+    writeConfig();
+  }
+  void init();
+  String getStr();
   static Cron *getInstance();
   void loop();
-  void addTask(Task);
+  boolean addTask(Task);
   void delTask(unsigned int);
 };
 

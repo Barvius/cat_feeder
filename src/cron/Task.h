@@ -26,6 +26,9 @@ public:
     return this->weight;
   }
 
+  boolean valid(){
+    return true;
+  }
 };
 
 #endif

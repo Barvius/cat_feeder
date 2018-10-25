@@ -6,7 +6,6 @@
 #include <time.h>
 
 #include "http/Http.h"
-#include "hardware/Hardware.h"
 #include "servo/ServoController.h"
 
 void ConnectWiFi() {
@@ -40,17 +39,19 @@ void UpdateFirmware() {
 
 void setup() {
   Serial.begin(115200);
-  // Hardware::servoZero();
   ConnectWiFi();
 
   // WiFi.mode(WIFI_AP_STA);
   // WiFi.softAP(String("ESP_" + String(ESP.getChipId())).c_str(), String("ESP_" + String(ESP.getChipId())).c_str());
   UpdateFirmware();
+
+  Cron::getInstance()->init();
   HTTP::getInstance()->init();
 }
 
 void loop() {
-  HTTP::getInstance()->handleClient();
+  Cron::getInstance()->loop();
   ServoController::getInstance()->loop();
+  HTTP::getInstance()->handleClient();
   delay(1);
 }

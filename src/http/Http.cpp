@@ -6,12 +6,36 @@ HTTP::HTTP(){
 
 void HTTP::init(){
   this->http->on("/feed", std::bind(&HTTP::feed_handler, this));
+  this->http->on("/task/list", std::bind(&HTTP::task_list_handler, this));
+  this->http->on("/task/add", std::bind(&HTTP::task_add_handler, this));
+  this->http->on("/task/del", std::bind(&HTTP::task_del_handler, this));
+  // this->http->on("/feed_add", std::bind(&HTTP::feed_add, this));
+  // this->http->on("/feed_del", std::bind(&HTTP::feed_del, this));
+  // this->http->on("/feed_clear", std::bind(&HTTP::Clear, this));
   this->http->on("/available_networks", std::bind(&HTTP::available_networks_handler, this));
   // this->http->on("/wifi", std::bind(&HTTP::connect_handler, this));
-  this->http->on("/time", std::bind(&HTTP::time_handler, this));
+  // this->http->on("/time", std::bind(&HTTP::time_handler, this));
   this->http->on("/restart", std::bind(&HTTP::restart_handler, this));
   this->http->begin();
-  timeSynch(3);
+}
+
+void HTTP::task_list_handler(){
+  this->http->send(200, "text / plain", Cron::getInstance()->getStr());
+}
+
+void HTTP::task_add_handler(){
+  if (this->http->argName(0) == "h" && this->http->argName(1) == "m" && this->http->argName(2) == "w") {
+    Cron::getInstance()->addTask(Task(this->http->arg("h").toInt(),this->http->arg("m").toInt(),this->http->arg("w").toInt()));
+    this->http->send(200, "text / plain","200");
+  }
+  this->http->send(404, "text / plain","404");
+}
+
+void HTTP::task_del_handler(){
+  if (this->http->argName(0) == "id"){
+    Cron::getInstance()->delTask(this->http->arg("id").toInt());
+    this->http->send(200, "text / plain", "ok");
+  }
 }
 
 void HTTP::handleClient(){
@@ -59,12 +83,13 @@ void HTTP::restart_handler() {
   ESP.restart();
 }
 
-void HTTP::time_handler(){
+// void HTTP::time_handler(){
   // String json = "{";
   // json += GetTime(GetUnixTime()).c_str();
   // json+="}";
-  this->http->send(200, "text / plain", GetTime(GetUnixTime()).c_str());
-}
+  // this->http->send(200, "text / plain", GetTime(GetUnixTime()).c_str());
+// }
+
 // void HTTP::connect_handler() {
 //  if (this->http->argName(0) == "ssid" && this->http->argName(1) == "password") {
 //    // WiFi.mode(WIFI_STA);
