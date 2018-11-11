@@ -16,18 +16,22 @@ void Cron::init(){
 }
 
 String Cron::getStr(){
-String s = "[";
-    for (Task i : this->task) {
+  String s = "[";
+  for (size_t i = 0; i < this->task.size(); i++) {
+    if(i > 0){
+      s += ",[";
+    } else {
       s += "[";
-      s += i.getHours();
-      s += ",";
-      s += i.getMinutes();
-      s += ",";
-      s += i.getWeight();
-      s += "],";
     }
-    s+="[]]";
-    return s;
+    s += this->task.at(i).getHours();
+    s += ",";
+    s += this->task.at(i).getMinutes();
+    s += ",";
+    s += this->task.at(i).getWeight();
+    s += "]";
+  }
+  s+="]";
+  return s;
 }
 
 boolean Cron::checkTaskTime(Task task, time_t now){
@@ -110,6 +114,11 @@ boolean Cron::addTask(Task task){
 
 void Cron::delTask(unsigned int index){
   this->task.erase(this->task.begin() + index, this->task.begin() + index + 1);
+  this->writeConfig();
+}
+
+void Cron::editTask(unsigned int index, unsigned int weight){
+  this->task.at(index).setWeight(weight);
   this->writeConfig();
 }
 

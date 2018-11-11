@@ -33,6 +33,7 @@ public:
   void loop();
   boolean addTask(Task);
   void delTask(unsigned int);
+  void editTask(unsigned int, unsigned int);
 };
 
 #endif

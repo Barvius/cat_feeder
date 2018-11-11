@@ -15,11 +15,12 @@ private:
 
   void task_list_handler();
   void task_add_handler();
+  void task_edit_handler();
   void task_del_handler();
 
   void available_networks_handler();
   void restart_handler();
-  // void connect_handler();
+  void connect_handler();
   // void time_handler();
   void feed_handler();
 

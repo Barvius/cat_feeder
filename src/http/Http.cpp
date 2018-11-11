@@ -8,6 +8,7 @@ void HTTP::init(){
   this->http->on("/feed", std::bind(&HTTP::feed_handler, this));
   this->http->on("/task/list", std::bind(&HTTP::task_list_handler, this));
   this->http->on("/task/add", std::bind(&HTTP::task_add_handler, this));
+  this->http->on("/task/edit", std::bind(&HTTP::task_edit_handler, this));
   this->http->on("/task/del", std::bind(&HTTP::task_del_handler, this));
   // this->http->on("/feed_add", std::bind(&HTTP::feed_add, this));
   // this->http->on("/feed_del", std::bind(&HTTP::feed_del, this));
@@ -28,7 +29,15 @@ void HTTP::task_add_handler(){
     Cron::getInstance()->addTask(Task(this->http->arg("h").toInt(),this->http->arg("m").toInt(),this->http->arg("w").toInt()));
     this->http->send(200, "text / plain","200");
   }
-  this->http->send(404, "text / plain","404");
+  this->http->send(400, "text / plain", "Bad Request");
+}
+
+void HTTP::task_edit_handler(){
+  if (this->http->argName(0) == "id" && this->http->argName(1) == "w") {
+    Cron::getInstance()->editTask(this->http->arg("id").toInt(),this->http->arg("w").toInt());
+    this->http->send(200, "text / plain","200");
+  }
+  this->http->send(400, "text / plain", "Bad Request");
 }
 
 void HTTP::task_del_handler(){
@@ -90,25 +99,25 @@ void HTTP::restart_handler() {
   // this->http->send(200, "text / plain", GetTime(GetUnixTime()).c_str());
 // }
 
-// void HTTP::connect_handler() {
-//  if (this->http->argName(0) == "ssid" && this->http->argName(1) == "password") {
-//    // WiFi.mode(WIFI_STA);
-//    WiFi.disconnect();
-//    WiFi.begin(this->http->arg("ssid").c_str(), this->http->arg("password").c_str());
-//    unsigned long timer = millis();
-//    while (WiFi.status() != WL_CONNECTED && millis() - timer < 10000) {
-//
-//    }
-//    if (millis() - timer >= 10000) {
-//      this->http->send(403, "text/plain", String(WiFi.status()));
-//      // break;
-//    }
-//    this->http->send(200, "text/plain", String(WiFi.status()));
-//    ESP.restart();
-//  } else {
-//    this->http->send(404, "text/plain", "XZ");
-//  }
-// }
+void HTTP::connect_handler() {
+ if (this->http->argName(0) == "ssid" && this->http->argName(1) == "password") {
+   // WiFi.mode(WIFI_STA);
+   WiFi.disconnect();
+   WiFi.begin(this->http->arg("ssid").c_str(), this->http->arg("password").c_str());
+   unsigned long timer = millis();
+   while (WiFi.status() != WL_CONNECTED && millis() - timer < 10000) {
+
+   }
+   if (millis() - timer >= 10000) {
+     this->http->send(403, "text/plain", String(WiFi.status()));
+     // break;
+   }
+   this->http->send(200, "text/plain", String(WiFi.status()));
+   delay(500);
+   ESP.restart();
+ }
+ this->http->send(400, "text / plain", "Bad Request");
+}
 
 HTTP* HTTP::instance = nullptr;
 

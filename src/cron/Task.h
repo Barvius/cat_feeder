@@ -26,9 +26,15 @@ public:
     return this->weight;
   }
 
+  void setWeight(unsigned int weight){
+    this->weight = weight;
+  }
+
   boolean valid(){
     return true;
   }
+
+
 };
 
 #endif
