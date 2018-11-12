@@ -3,22 +3,22 @@
 #include <DNSServer.h>
 #include <ESP8266httpUpdate.h>
 #include <ESP8266HTTPClient.h>
-#include <time.h>
 
 #include "http/Http.h"
 #include "servo/ServoController.h"
+#include "wireless/Wireless.h"
 
-void ConnectWiFi() {
-  WiFi.mode(WIFI_STA);
-  WiFi.begin();
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println("");
-  Serial.println("IP address: ");
-  Serial.println(WiFi.localIP());
-}
+// void ConnectWiFi() {
+//   WiFi.mode(WIFI_STA);
+//   WiFi.begin();
+//   while (WiFi.status() != WL_CONNECTED) {
+//     delay(500);
+//     Serial.print(".");
+//   }
+//   Serial.println("");
+//   Serial.println("IP address: ");
+//   Serial.println(WiFi.localIP());
+// }
 
 void UpdateFirmware() {
   t_httpUpdate_return ret = ESPhttpUpdate.update("192.168.1.141", 80, "/esp8266/", String(ESP.getSketchSize()));
@@ -39,17 +39,19 @@ void UpdateFirmware() {
 
 void setup() {
   Serial.begin(115200);
-  ConnectWiFi();
 
-  // WiFi.mode(WIFI_AP_STA);
-  // WiFi.softAP(String("ESP_" + String(ESP.getChipId())).c_str(), String("ESP_" + String(ESP.getChipId())).c_str());
-  UpdateFirmware();
+  Wireless::getInstance()->init();
+  int res = WiFi.waitForConnectResult();
+  if(res == WL_CONNECTED){
+    UpdateFirmware();
+  }
 
   Cron::getInstance()->init();
   HTTP::getInstance()->init();
 }
 
 void loop() {
+  Wireless::getInstance()->loop();
   Cron::getInstance()->loop();
   ServoController::getInstance()->loop();
   HTTP::getInstance()->handleClient();

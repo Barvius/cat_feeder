@@ -2,7 +2,6 @@
 #define http_h
 
 #include "Arduino.h"
-#include <time.h>
 #include <ESP8266WebServer.h>
 #include "../servo/ServoController.h"
 #include "../cron/Cron.h"

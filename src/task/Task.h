@@ -30,11 +30,6 @@ public:
     this->weight = weight;
   }
 
-  boolean valid(){
-    return true;
-  }
-
-
 };
 
 #endif

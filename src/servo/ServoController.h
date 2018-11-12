@@ -22,6 +22,5 @@ public:
   static ServoController *getInstance();
   void loop();
   boolean feed(unsigned int);
-  // virtual  ServoController ();
 };
 #endif
