@@ -30,6 +30,12 @@ public:
     this->weight = weight;
   }
 
+  boolean isValid(){
+    if(this->h < 24 && this->m < 60){
+      return true;
+    }
+    return false;
+  }
 };
 
 #endif

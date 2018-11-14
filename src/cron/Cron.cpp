@@ -104,22 +104,30 @@ void Cron::loop(){
 }
 
 boolean Cron::addTask(Task task){
-  // if(!task.valid()){
-  //   return false;
-  // }
+  if(!task.isValid()){
+    return false;
+  }
   this->task.push_back(task);
   this->writeConfig();
   return true;
 }
 
-void Cron::delTask(unsigned int index){
+boolean Cron::delTask(unsigned int index){
+  if(index > this->task.size() - 1){
+    return false;
+  }
   this->task.erase(this->task.begin() + index, this->task.begin() + index + 1);
   this->writeConfig();
+  return true;
 }
 
-void Cron::editTask(unsigned int index, unsigned int weight){
+boolean Cron::editTask(unsigned int index, unsigned int weight){
+  if(index > this->task.size() - 1){
+    return false;
+  }
   this->task.at(index).setWeight(weight);
   this->writeConfig();
+  return true;
 }
 
 Cron* Cron::instance = nullptr;

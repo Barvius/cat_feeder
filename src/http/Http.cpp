@@ -30,25 +30,32 @@ void HTTP::task_list_handler(){
 
 void HTTP::task_add_handler(){
   if (this->http->argName(0) == "h" && this->http->argName(1) == "m" && this->http->argName(2) == "w") {
-    Cron::getInstance()->addTask(Task(this->http->arg("h").toInt(),this->http->arg("m").toInt(),this->http->arg("w").toInt()));
-    this->http->send(200, "text / plain","200");
+    if(!Cron::getInstance()->addTask(Task(this->http->arg("h").toInt(),this->http->arg("m").toInt(),this->http->arg("w").toInt()))){
+      this->http->send(400, "text / plain","Add task failed");
+    }
+    this->http->send(200, "text / plain","Task successfully added");
   }
   this->http->send(400, "text / plain", "Bad Request");
 }
 
 void HTTP::task_edit_handler(){
   if (this->http->argName(0) == "id" && this->http->argName(1) == "w") {
-    Cron::getInstance()->editTask(this->http->arg("id").toInt(),this->http->arg("w").toInt());
-    this->http->send(200, "text / plain","200");
+    if(!Cron::getInstance()->editTask(this->http->arg("id").toInt(),this->http->arg("w").toInt())){
+      this->http->send(400, "text / plain", "Task not found");
+    }
+    this->http->send(200, "text / plain","Task successfully changed");
   }
   this->http->send(400, "text / plain", "Bad Request");
 }
 
 void HTTP::task_del_handler(){
   if (this->http->argName(0) == "id"){
-    Cron::getInstance()->delTask(this->http->arg("id").toInt());
-    this->http->send(200, "text / plain", "ok");
+    if(!Cron::getInstance()->delTask(this->http->arg("id").toInt())){
+      this->http->send(400, "text / plain", "Task not found");
+    }
+    this->http->send(200, "text / plain", "Task successfully deleted");
   }
+  this->http->send(400, "text / plain", "Bad Request");
 }
 
 void HTTP::handleClient(){

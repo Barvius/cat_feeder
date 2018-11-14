@@ -32,8 +32,8 @@ public:
   static Cron *getInstance();
   void loop();
   boolean addTask(Task);
-  void delTask(unsigned int);
-  void editTask(unsigned int, unsigned int);
+  boolean delTask(unsigned int);
+  boolean editTask(unsigned int, unsigned int);
 };
 
 #endif
