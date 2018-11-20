@@ -7,6 +7,7 @@
 #include "Arduino.h"
 #include "../task/Task.h"
 #include "../servo/ServoController.h"
+#include "../logger/Logger.h"
 
 class Cron {
 private:

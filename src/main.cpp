@@ -28,6 +28,7 @@ void UpdateFirmware() {
       break;
 
     case HTTP_UPDATE_NO_UPDATES:
+    Logger::getInstance()->writeLn("HTTP_UPDATE_NO_UPDATES");
       Serial.println("HTTP_UPDATE_NO_UPDATES");
       break;
 

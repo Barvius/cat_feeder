@@ -5,6 +5,7 @@
 #include <ESP8266WebServer.h>
 #include "../servo/ServoController.h"
 #include "../cron/Cron.h"
+#include "../logger/Logger.h"
 
 class HTTP {
 private:
@@ -16,6 +17,8 @@ private:
   void task_add_handler();
   void task_edit_handler();
   void task_del_handler();
+
+  void log_handler();
 
   void available_networks_handler();
   void restart_handler();

@@ -82,6 +82,7 @@ void Cron::loop(){
     if(millis() - this->lastTickTime > 1000*60){
       for (Task i : this->task) {
         if (this->checkTaskTime(i,time(nullptr))) {
+          Logger::getInstance()->writeLn("Start feed");
           ServoController::getInstance()->feed(i.getWeight());
           HTTPClient httpClient;
           httpClient.setUserAgent("FEEDER");
@@ -95,6 +96,7 @@ void Cron::loop(){
   }
   if(millis() - this->ntpTimeCheck > 10000){
     if (!time(nullptr)) {
+      Logger::getInstance()->writeLn("Ntp Server is down");
       this->ntpTimeActive = false;
     } else {
       this->ntpTimeActive = true;
