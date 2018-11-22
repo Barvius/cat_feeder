@@ -2,6 +2,7 @@
 #define logger_h
 
 #include "Arduino.h"
+#include "../Time/Time.h"
 
 class Logger {
 private:

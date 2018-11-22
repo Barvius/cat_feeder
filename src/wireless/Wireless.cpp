@@ -1,12 +1,14 @@
 #include "Wireless.h"
 
 void Wireless::connectToAP(){
+  Logger::getInstance()->writeLn("Connecting to "+WiFi.SSID());
   this->wirelessMode = STA;
   WiFi.mode(WIFI_STA);
   WiFi.begin();
 }
 
 void Wireless::startAP(){
+  Logger::getInstance()->writeLn("Start AP");
   this->wirelessMode = AP;
   WiFi.mode(WIFI_AP_STA);
   WiFi.softAP(String("ESP_" + String(ESP.getChipId())).c_str(), String("ESP_" + String(ESP.getChipId())).c_str());
@@ -24,10 +26,11 @@ void Wireless::loop(){
   if(millis() - this->lastTickTime > 30000){
     switch (this->wirelessMode) {
       case AP:
-        
+
         break;
       case STA:
         if(WiFi.status() != WL_CONNECTED){
+            Logger::getInstance()->writeLn("Failed connect to router");
             this->startAP();
         }
         break;

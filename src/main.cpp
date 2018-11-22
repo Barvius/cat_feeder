@@ -7,6 +7,7 @@
 #include "http/Http.h"
 #include "servo/ServoController.h"
 #include "wireless/Wireless.h"
+#include "time/Time.h"
 
 // void ConnectWiFi() {
 //   WiFi.mode(WIFI_STA);
@@ -46,7 +47,7 @@ void setup() {
   if(res == WL_CONNECTED){
     UpdateFirmware();
   }
-
+  Time::configTZ(3);
   Cron::getInstance()->init();
   HTTP::getInstance()->init();
 }

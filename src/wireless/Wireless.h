@@ -2,6 +2,7 @@
 #define wireless_h
 
 #include <ESP8266WiFi.h>
+#include "../logger/Logger.h"
 
 class Wireless {
 private:

@@ -9,7 +9,6 @@ Cron::Cron(){
 }
 
 void Cron::init(){
-  configTime(3 * 3600, 0, "pool.ntp.org", "ru.pool.ntp.org");
   if(!SPIFFS.begin()){
   }
   this->readConfig();
@@ -82,7 +81,7 @@ void Cron::loop(){
     if(millis() - this->lastTickTime > 1000*60){
       for (Task i : this->task) {
         if (this->checkTaskTime(i,time(nullptr))) {
-          Logger::getInstance()->writeLn("Start feed");
+          Logger::getInstance()->writeLn("Start feed " + String(i.getWeight()) +"gr");
           ServoController::getInstance()->feed(i.getWeight());
           HTTPClient httpClient;
           httpClient.setUserAgent("FEEDER");

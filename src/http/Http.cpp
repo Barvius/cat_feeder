@@ -19,6 +19,13 @@ void HTTP::init(){
 
   this->http->on("/log", std::bind(&HTTP::log_handler, this));
 
+  this->http->on("/info", [this]() {
+    String str="";
+    str += "heap = ";
+    str += ESP.getFreeHeap();
+    this->http->send(200, "text/plain", str);
+  });
+
   this->http->on("/available_networks", std::bind(&HTTP::available_networks_handler, this));
   // this->http->on("/wifi", std::bind(&HTTP::connect_handler, this));
   // this->http->on("/time", std::bind(&HTTP::time_handler, this));
