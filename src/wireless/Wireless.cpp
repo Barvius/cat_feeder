@@ -26,12 +26,15 @@ void Wireless::loop(){
   if(millis() - this->lastTickTime > 30000){
     switch (this->wirelessMode) {
       case AP:
-
+        if(WiFi.status() == WL_CONNECTED && wifi_softap_get_station_num() == NULL){
+          Logger::getInstance()->writeLn("Resume connect to router");
+          this->connectToAP();
+        }
         break;
       case STA:
         if(WiFi.status() != WL_CONNECTED){
-            Logger::getInstance()->writeLn("Failed connect to router");
-            this->startAP();
+          Logger::getInstance()->writeLn("Failed connect to router");
+          this->startAP();
         }
         break;
     }

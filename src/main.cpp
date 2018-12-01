@@ -29,7 +29,7 @@ void UpdateFirmware() {
       break;
 
     case HTTP_UPDATE_NO_UPDATES:
-    Logger::getInstance()->writeLn("HTTP_UPDATE_NO_UPDATES");
+      Logger::getInstance()->writeLn("HTTP_UPDATE_NO_UPDATES");
       Serial.println("HTTP_UPDATE_NO_UPDATES");
       break;
 
@@ -41,7 +41,7 @@ void UpdateFirmware() {
 
 void setup() {
   Serial.begin(115200);
-
+  ServoController::getInstance()->init();
   Wireless::getInstance()->init();
   int res = WiFi.waitForConnectResult();
   if(res == WL_CONNECTED){

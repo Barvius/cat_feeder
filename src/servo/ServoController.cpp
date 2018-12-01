@@ -20,16 +20,23 @@ void ServoController::loop(){
   }
 }
 
+void ServoController::init(){
+  this->servo.attach(14);
+  this->servo.write(0);
+  delay(50);
+  this->servo.detach();
+}
+
 boolean ServoController::feed(unsigned int weight){
   switch (weight) {
-    case 5:
+    // case 5:
+    // this->startFeed(5);
+    //   return true;
+    case 10:
     this->startFeed(7);
       return true;
-    case 10:
+    case 20:
     this->startFeed(13);
-      return true;
-    case 15:
-    this->startFeed(19);
       return true;
     default:
       return false;
@@ -51,9 +58,6 @@ void ServoController::stopFeed(){
 }
 
 ServoController::ServoController(){
-  this->servo.attach(14);
-  this->servo.write(0);
-  this->servo.detach();
   this->feeding = false;
 }
 
