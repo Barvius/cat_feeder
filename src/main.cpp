@@ -50,6 +50,7 @@ void setup() {
   Time::configTZ(3);
   Cron::getInstance()->init();
   HTTP::getInstance()->init();
+  Time::getInstance()->getTime();
 }
 
 void loop() {

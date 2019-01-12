@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title></title>
+    <link rel="stylesheet" href="/css/menu.min.css">
+    <link rel="stylesheet" href="/css/list.min.css">
+    <link rel="stylesheet" href="/css/container.min.css">
+    <link rel="stylesheet" href="/css/transition.min.css">
+    <link rel="stylesheet" href="/css/dimmer.min.css">
+    <link rel="stylesheet" href="/css/modal.min.css">
+    <link rel="stylesheet" href="/css/button.min.css">
+    <link rel="stylesheet" href="/css/input.min.css">
+    <link rel="stylesheet" href="/css/reset.min.css">
+
+  </head>
+  <body>
+    <!-- <div class="ui mini test modal basic" id="password_modal">
+
+      <div class="header">
+        <p id="password_modal_ssid"></p>
+      </div>
+
+      <div class="content">
+        <div class="ui input fluid">
+          <input type="text" placeholder="password" type="hidden" id="password_modal_pwd">
+        </div>
+      </div>
+      <div class="actions" style="border:none;">
+        <div class="ui positive button fluid" style="margin:0;" onClick="connect();">
+          Connect
+        </div>
+      </div>
+    </div> -->
+
+    <div class="ui top fixed menu">
+      <a class="item">Features</a>
+      <a class="item">Testimonials</a>
+      <a class="item">Sign-in</a>
+    </div>
+
+    <div class="ui main text container">
+      <div class="ui middle aligned selection list divided" id="feed_list" style="margin-top:70px;">
+
+      </div>
+    </div>
+
+  </body>
+  <script src="/js/jquery-3.3.1.min.js" charset="utf-8"></script>
+  <script src="/js/transition.min.js" charset="utf-8"></script>
+  <script src="/js/dimmer.min.js" charset="utf-8"></script>
+  <script src="/js/modal.min.js" charset="utf-8"></script>
+
+  <script>
+
+
+  $(document).ready(function() {
+    $.getJSON("/task/list", function(data) {
+      $.each(data, function(key, val) {
+        if(val[2] == 10){
+          img = '/img/w-10.png';
+        } else {
+          img = '/img/w-20.png';
+        }
+        // if(val['connect'] == 'true'){
+        //   img = '/img/wi-fi-connected.png';
+        // }
+          $('#feed_list').append(
+          '<div class="item">\
+            <img class="ui avatar image" src="'+img+'" height="35" width="35">\
+            <div class="content">\
+              <div class="header">'+humanTime(val[0],val[1])+'</div>\
+            </div>\
+            <div class="right floated content">\
+              <div class="ui button">Add</div>\
+            </div>\
+          </div>');
+
+        console.log(key);
+        console.log(val);
+      });
+
+    });
+  });
+
+function addZeros(number) {
+  return number < 10 ? '0'+number:number;
+}
+
+function humanTime(h,m) {
+  return addZeros(h) + ":" + addZeros(m)
+}
+
+function connectTo(ssid,access,connected) {
+  console.log(ssid);
+  console.log(access);
+
+  if(connected == 'true'){
+    window.alert("Вы уже подключены к этой сети.");
+    return;
+  }
+
+  if(access == 'close'){
+    var password = prompt("Введите пароль для " + ssid, "Password");
+
+    if (password != null || password != "") {
+      saveConfig(ssid,password);
+    }
+  } else {
+    saveConfig(ssid,'');
+  }
+
+}
+
+function saveConfig(ssid,password) {
+  $.ajax({
+    url: '/wifi',
+    type: 'POST',
+    data: 'ssid='+ssid+'&password='+password,
+    success: function(data) {
+      // if (data == "OK") {
+      //
+      // }
+    }
+  });
+}
+</script>
+
+</html>

@@ -5,13 +5,13 @@ Logger::Logger(){
 }
 
 void Logger::write(String str){
-  this->log += Time::getCurrentTime();
+  this->log += getCurrentTime();
   this->log += " - ";
   this->log += str;
 }
 
 void Logger::writeLn(String str){
-  this->log += Time::getCurrentTime();
+  this->log += getCurrentTime();
   this->log += " - ";
   this->log += str;
   this->log += "\n";

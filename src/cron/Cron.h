@@ -5,6 +5,8 @@
 #include <ctime>
 #include <ESP8266HTTPClient.h>
 #include "Arduino.h"
+#include "FS.h"
+#include <stdio.h>
 #include "../task/Task.h"
 #include "../servo/ServoController.h"
 #include "../logger/Logger.h"

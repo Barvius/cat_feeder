@@ -2,7 +2,8 @@
 #define logger_h
 
 #include "Arduino.h"
-#include "../Time/Time.h"
+#include <ctime>
+//#include "../Time/Time.h"
 
 class Logger {
 private:
@@ -15,5 +16,9 @@ public:
   void write(String);
   void writeLn(String);
   String getLog();
+  String getCurrentTime(){
+    time_t tm = time(nullptr);
+    return strtok(ctime(&tm), "\n");
+  }
 };
 #endif
