@@ -8,6 +8,7 @@
 #include "servo/ServoController.h"
 #include "wireless/Wireless.h"
 #include "time/Time.h"
+#include "discovering/Discovering.h"
 
 // void ConnectWiFi() {
 //   WiFi.mode(WIFI_STA);
@@ -47,9 +48,10 @@ void setup() {
   if(res == WL_CONNECTED){
     UpdateFirmware();
   }
-  Time::configTZ(3);
+  // Time::configTZ(3);
   Cron::getInstance()->init();
   HTTP::getInstance()->init();
+  Discovering::getInstance()->init();
   Time::getInstance()->getTime();
 }
 
@@ -58,5 +60,6 @@ void loop() {
   Cron::getInstance()->loop();
   ServoController::getInstance()->loop();
   HTTP::getInstance()->handleClient();
+  Discovering::getInstance()->loop();
   delay(1);
 }

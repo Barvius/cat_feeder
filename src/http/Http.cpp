@@ -317,6 +317,12 @@ void HTTP::time_handler(){
   if (this->http->argName(0) == "time") {
     this->http->send(200, "application/json", Time::getInstance()->getT(this->http->arg("time").toInt()));
   }
+  if (this->http->argName(0) == "ntp") {
+    if(Time::getInstance()->GetNTP("pool.ntp.org")){
+      this->http->send(200, "application/json", "success");
+    }
+    this->http->send(200, "application/json", "fail");
+  }
   this->http->send(200, "application/json", Time::getInstance()->getTime());
 }
 HTTP* HTTP::instance = nullptr;
