@@ -59,12 +59,5 @@ void ServoController::stopFeed(){
 
 ServoController::ServoController(){
   this->feeding = false;
-}
-
-ServoController* ServoController::instance = nullptr;
-
-ServoController* ServoController::getInstance(){
-  if (instance == nullptr)
-    instance = new ServoController;
-   return instance;
+  this->init();
 }

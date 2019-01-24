@@ -4,11 +4,7 @@
 #include <ESP8266httpUpdate.h>
 #include <ESP8266HTTPClient.h>
 
-#include "http/Http.h"
-#include "servo/ServoController.h"
-#include "wireless/Wireless.h"
-#include "time/Time.h"
-#include "discovering/Discovering.h"
+#include "app/App.h"
 
 // void ConnectWiFi() {
 //   WiFi.mode(WIFI_STA);
@@ -30,7 +26,7 @@ void UpdateFirmware() {
       break;
 
     case HTTP_UPDATE_NO_UPDATES:
-      Logger::getInstance()->writeLn("HTTP_UPDATE_NO_UPDATES");
+      // Logger::getInstance()->writeLn("HTTP_UPDATE_NO_UPDATES");
       Serial.println("HTTP_UPDATE_NO_UPDATES");
       break;
 
@@ -39,27 +35,16 @@ void UpdateFirmware() {
       break;
   }
 }
-
+App app = App();
 void setup() {
   Serial.begin(115200);
-  ServoController::getInstance()->init();
-  Wireless::getInstance()->init();
+  // app = new App();
   int res = WiFi.waitForConnectResult();
   if(res == WL_CONNECTED){
     UpdateFirmware();
   }
-  // Time::configTZ(3);
-  Cron::getInstance()->init();
-  HTTP::getInstance()->init();
-  Discovering::getInstance()->init();
-  Time::getInstance()->getTime();
 }
 
 void loop() {
-  Wireless::getInstance()->loop();
-  Cron::getInstance()->loop();
-  ServoController::getInstance()->loop();
-  HTTP::getInstance()->handleClient();
-  Discovering::getInstance()->loop();
-  delay(1);
+  app.loop();
 }

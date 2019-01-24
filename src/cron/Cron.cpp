@@ -1,9 +1,13 @@
 #include "Cron.h"
 
-Cron::Cron(){
+Cron::Cron(RTC* rtc,Logger* logger,ServoController* servoController){
+  this->rtc = rtc;
+  this->logger = logger;
+  this->servoController = servoController;
   this->lastTickTime = 0;
-  this->ntpTimeCheck = 0;
-  this->ntpTimeActive = false;
+  this->init();
+  // this->ntpTimeCheck = 0;
+  // this->ntpTimeActive = false;
 }
 
 void Cron::init(){
@@ -31,14 +35,8 @@ String Cron::getStr(){
   return s;
 }
 
-boolean Cron::checkTaskTime(Task task, time_t now){
-  String Time = ctime(&now);
-  int i = Time.indexOf(":");
-  String h = Time.substring(i - 2, i);
-  String m = Time.substring(i+1, i + 3);
-  Serial.println(h.toInt());
-  Serial.println(m.toInt());
-  if(task.getHours() == h.toInt() && task.getMinutes() == m.toInt()){
+boolean Cron::checkTaskTime(Task task, std::tm now){
+  if(task.getHours() == now.tm_hour && task.getMinutes() == now.tm_min){
     return true;
   }
   return false;
@@ -75,12 +73,14 @@ void Cron::writeConfig(){
 }
 
 void Cron::loop(){
-  if (this->ntpTimeActive) {
+  if (this->rtc->isRunning()) {
     if(millis() - this->lastTickTime > 1000*60){
+      // std::tm time;
+      // RTC::getTime(&time);
       for (Task i : this->task) {
-        if (this->checkTaskTime(i,time(nullptr))) {
-          Logger::getInstance()->writeLn("Start feed " + String(i.getWeight()) +"gr");
-          ServoController::getInstance()->feed(i.getWeight());
+        if (this->checkTaskTime(i,this->rtc->getTime())) {
+          this->logger->writeLn("Start feed " + String(i.getWeight()) +"gr");
+          this->servoController->feed(i.getWeight());
           HTTPClient httpClient;
           httpClient.setUserAgent("FEEDER");
           httpClient.begin("http://192.168.1.141/"+String(i.getWeight()));
@@ -91,15 +91,15 @@ void Cron::loop(){
       this->lastTickTime = millis();
     }
   }
-  if(millis() - this->ntpTimeCheck > 10000){
-    if (!time(nullptr)) {
-      Logger::getInstance()->writeLn("Ntp Server is down");
-      this->ntpTimeActive = false;
-    } else {
-      this->ntpTimeActive = true;
-    }
-    this->ntpTimeCheck = millis();
-  }
+  // if(millis() - this->ntpTimeCheck > 10000){
+  //   if (!time(nullptr)) {
+  //     Logger::getInstance()->writeLn("Ntp Server is down");
+  //     this->ntpTimeActive = false;
+  //   } else {
+  //     this->ntpTimeActive = true;
+  //   }
+  //   this->ntpTimeCheck = millis();
+  // }
 }
 
 boolean Cron::addTask(Task task){
@@ -127,12 +127,4 @@ boolean Cron::editTask(unsigned int index, unsigned int weight){
   this->task.at(index).setWeight(weight);
   this->writeConfig();
   return true;
-}
-
-Cron* Cron::instance = nullptr;
-
-Cron* Cron::getInstance(){
-  if (instance == nullptr)
-    instance = new Cron;
-   return instance;
 }

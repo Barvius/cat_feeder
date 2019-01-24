@@ -1,7 +1,12 @@
 #include "Http.h"
 
-HTTP::HTTP(){
+HTTP::HTTP(Logger* logger,RTC* rtc,Cron* cron,ServoController* servoController){
+  this->logger = logger;
+  this->rtc = rtc;
+  this->cron = cron;
+  this->servoController = servoController;
   this->http = new ESP8266WebServer(80);
+  this->init();
 }
 
 void HTTP::init(){
@@ -19,6 +24,7 @@ void HTTP::init(){
 
   this->http->on("/log", std::bind(&HTTP::log_handler, this));
   this->http->on("/time", std::bind(&HTTP::time_handler, this));
+  this->http->on("/time/ntp", std::bind(&HTTP::ntpTimeHandler, this));
   this->http->on("/info", [this]() {
     String str="";
     str += "heap = ";
@@ -136,22 +142,22 @@ void HTTP::FSFileList() {
 File fsUploadFile;
 void HTTP::FSFileUpload() {
   //this->http->sendHeader("Access-Control-Allow-Origin", "*", true);
-Logger::getInstance()->writeLn("upload");
+this->logger->writeLn("upload");
   HTTPUpload& upload = this->http->upload();
   if(upload.status == UPLOAD_FILE_START){
     String filename = upload.filename;
     if(!filename.startsWith("/")) filename = "/"+filename;
-    Logger::getInstance()->writeLn("handleFileUpload Name: "); Logger::getInstance()->writeLn(filename);
+    this->logger->writeLn("handleFileUpload Name: "); this->logger->writeLn(filename);
     fsUploadFile = SPIFFS.open(filename, "w");            // Open the file for writing in SPIFFS (create if it doesn't exist)
     filename = String();
   } else if(upload.status == UPLOAD_FILE_WRITE){
     if(fsUploadFile)
       fsUploadFile.write(upload.buf, upload.currentSize); // Write the received bytes to the file
   } else if(upload.status == UPLOAD_FILE_END){
-    Logger::getInstance()->writeLn("end");
+    this->logger->writeLn("end");
     if(fsUploadFile) {                                    // If the file was successfully created
       fsUploadFile.close();                               // Close the file again
-      Logger::getInstance()->writeLn("handleFileUpload Size: "); Logger::getInstance()->writeLn(String(upload.totalSize));
+      this->logger->writeLn("handleFileUpload Size: "); this->logger->writeLn(String(upload.totalSize));
       //this->http->sendHeader("Location","/success.html");      // Redirect the client to the success page
       this->http->send(200);
     } else {
@@ -201,12 +207,12 @@ void HTTP::FSFileCreate() {
 }
 
 void HTTP::task_list_handler(){
-  this->http->send(200, "application/json", Cron::getInstance()->getStr());
+  this->http->send(200, "application/json", this->cron->getStr());
 }
 
 void HTTP::task_add_handler(){
   if (this->http->argName(0) == "h" && this->http->argName(1) == "m" && this->http->argName(2) == "w") {
-    if(!Cron::getInstance()->addTask(Task(this->http->arg("h").toInt(),this->http->arg("m").toInt(),this->http->arg("w").toInt()))){
+    if(!this->cron->addTask(Task(this->http->arg("h").toInt(),this->http->arg("m").toInt(),this->http->arg("w").toInt()))){
       this->http->send(400, "text / plain","Add task failed");
     }
     this->http->send(200, "text / plain","Task successfully added");
@@ -216,7 +222,7 @@ void HTTP::task_add_handler(){
 
 void HTTP::task_edit_handler(){
   if (this->http->argName(0) == "id" && this->http->argName(1) == "w") {
-    if(!Cron::getInstance()->editTask(this->http->arg("id").toInt(),this->http->arg("w").toInt())){
+    if(!this->cron->editTask(this->http->arg("id").toInt(),this->http->arg("w").toInt())){
       this->http->send(400, "text / plain", "Task not found");
     }
     this->http->send(200, "text / plain","Task successfully changed");
@@ -226,7 +232,7 @@ void HTTP::task_edit_handler(){
 
 void HTTP::task_del_handler(){
   if (this->http->argName(0) == "id"){
-    if(!Cron::getInstance()->delTask(this->http->arg("id").toInt())){
+    if(!this->cron->delTask(this->http->arg("id").toInt())){
       this->http->send(400, "text / plain", "Task not found");
     }
     this->http->send(200, "text / plain", "Task successfully deleted");
@@ -235,7 +241,7 @@ void HTTP::task_del_handler(){
 }
 
 void HTTP::log_handler(){
-  this->http->send(200, "text / plain", Logger::getInstance()->getLog());
+  this->http->send(200, "text / plain", this->logger->getLog());
 }
 
 void HTTP::handleClient(){
@@ -244,7 +250,7 @@ void HTTP::handleClient(){
 
 void HTTP::feed_handler(){
   if (this->http->argName(0) == "amount") {
-    if(ServoController::getInstance()->feed(this->http->arg("amount").toInt())){
+    if(this->servoController->feed(this->http->arg("amount").toInt())){
       this->http->send(200, "text / plain", "FEED OK");
     }
   }
@@ -314,21 +320,18 @@ void HTTP::info_wifi_handler(){
 }
 
 void HTTP::time_handler(){
-  if (this->http->argName(0) == "time") {
-    this->http->send(200, "application/json", Time::getInstance()->getT(this->http->arg("time").toInt()));
-  }
-  if (this->http->argName(0) == "ntp") {
-    if(Time::getInstance()->GetNTP("pool.ntp.org")){
-      this->http->send(200, "application/json", "success");
-    }
-    this->http->send(200, "application/json", "fail");
-  }
-  this->http->send(200, "application/json", Time::getInstance()->getTime());
+  // if (this->http->argName(0) == "time") {
+  //   this->http->send(200, "application/json", Time::getInstance()->getT(this->http->arg("time").toInt()));
+  // }
+  this->http->send(200, "application/json", "this->rtc->getTime()");
 }
-HTTP* HTTP::instance = nullptr;
 
-HTTP* HTTP::getInstance(){
-  if (instance == nullptr)
-    instance = new HTTP;
-   return instance;
+void HTTP::ntpTimeHandler(){
+  if (this->http->argName(0) == "server" && this->http->argName(1) == "offset") {
+    // if(Time::getInstance()->getTimeNTP(this->http->arg("server"),this->http->arg("offset").toInt())){
+    //   this->http->send(200, "application/json", "Success synchronization from NTP server");
+    // }
+    this->http->send(500, "text / plain", "Error synchronization from NTP server");
+  }
+  this->http->send(400, "text / plain", "Bad Request");
 }

@@ -1,24 +1,28 @@
 #ifndef logger_h
 #define logger_h
 
-#include "Arduino.h"
+// #include "Arduino.h"
 #include <ctime>
-//#include "../Time/Time.h"
+#include "../time/RTC.h"
+#include "../time/RTCStruct.h"
 
 class Logger {
 private:
+  RTC *rtc = nullptr;
   String log;
-  static Logger *instance;
-  Logger();
+
 
 public:
-  static Logger *getInstance();
+  Logger(RTC*);
   void write(String);
   void writeLn(String);
   String getLog();
   String getCurrentTime(){
-    time_t tm = time(nullptr);
-    return strtok(ctime(&tm), "\n");
+    // std::tm time;
+    // time = this->rtc->getTime();
+    return "time here";
   }
+
+
 };
 #endif

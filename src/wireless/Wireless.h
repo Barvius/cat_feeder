@@ -6,6 +6,7 @@
 
 class Wireless {
 private:
+  Logger* logger;
   enum WirelessMode {AP, STA};
   WirelessMode wirelessMode;
 
@@ -14,11 +15,10 @@ private:
   void connectToAP();
   void startAP();
 
-  static Wireless *instance;
-  Wireless();
+
 
 public:
-  static Wireless *getInstance();
+  Wireless(Logger*);
   void init();
   void loop();
 };

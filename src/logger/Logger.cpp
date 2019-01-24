@@ -1,17 +1,17 @@
 #include "Logger.h"
 
-Logger::Logger(){
-
+Logger::Logger(RTC* rtc){
+  this->rtc = rtc;
 }
 
 void Logger::write(String str){
-  this->log += getCurrentTime();
+  this->log += this->getCurrentTime();
   this->log += " - ";
   this->log += str;
 }
 
 void Logger::writeLn(String str){
-  this->log += getCurrentTime();
+  this->log += this->getCurrentTime();
   this->log += " - ";
   this->log += str;
   this->log += "\n";
@@ -19,12 +19,4 @@ void Logger::writeLn(String str){
 
 String Logger::getLog(){
   return this->log;
-}
-
-Logger* Logger::instance = nullptr;
-
-Logger* Logger::getInstance(){
-  if (instance == nullptr)
-    instance = new Logger;
-   return instance;
 }

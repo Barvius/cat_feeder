@@ -15,11 +15,11 @@ private:
   void startFeed(unsigned int);
   void stopFeed();
 
-  static ServoController *instance;
-  ServoController();
+
 
 public:
-  static ServoController *getInstance();
+  ServoController();
+  
   void loop();
   void init();
   boolean feed(unsigned int);

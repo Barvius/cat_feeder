@@ -11,9 +11,13 @@
 
 class HTTP {
 private:
-  static HTTP *instance;
+  RTC* rtc = nullptr;
+  Logger* logger = nullptr;
+  Cron* cron = nullptr;
+  ServoController* servoController = nullptr;
+
   ESP8266WebServer *http;
-  HTTP ();
+
 
   void task_list_handler();
   void task_add_handler();
@@ -28,6 +32,7 @@ private:
   void info_wifi_handler();
   void feed_handler();
   void time_handler();
+  void ntpTimeHandler();
 
   String FSContentType(String);
   boolean FSFileRead(String);
@@ -36,7 +41,7 @@ private:
   void FSFileDelete();
   void FSFileCreate();
 public:
-  static HTTP *getInstance();
+  HTTP (Logger*,RTC*,Cron*,ServoController*);
   void init();
   void handleClient();
 

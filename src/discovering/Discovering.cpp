@@ -1,7 +1,7 @@
 #include "Discovering.h"
 
-Discovering::Discovering(){
-
+Discovering::Discovering(Logger* logger){
+  this->logger = logger;
 }
 
 void Discovering::init(){
@@ -14,13 +14,13 @@ void Discovering::loop(){
 
   if (this->udp->parsePacket()) {
     int packetLen = this->udp->available();
-    Logger::getInstance()->writeLn("recv");
-    Logger::getInstance()->writeLn(String(this->udp->remoteIP()));
-    Logger::getInstance()->writeLn(String(this->udp->remotePort()));
+    this->logger->writeLn("recv");
+    this->logger->writeLn(String(this->udp->remoteIP()));
+    this->logger->writeLn(String(this->udp->remotePort()));
     char packetData[255];
     this->udp->read(packetData,packetLen);
     if (!strcmp(packetData, "M-SEARCH * HTTP/1.1\r\n")){
-      Logger::getInstance()->writeLn("nash packet");
+      this->logger->writeLn("nash packet");
       this->udp->beginPacket(this->udp->remoteIP(), this->udp->remotePort());
       this->udp->write("HTTP/1.1 200");
       this->udp->endPacket();
@@ -41,13 +41,4 @@ void Discovering::loop(){
     // Serial.println(packetBuffer);
 
   }
-}
-
-Discovering* Discovering::instance = nullptr;
-
-Discovering* Discovering::getInstance(){
-  if (instance == nullptr){
-    instance = new Discovering;
-  }
-  return instance;
 }

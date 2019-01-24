@@ -5,13 +5,12 @@
 #include "../logger/Logger.h"
 class Discovering {
 private:
+  Logger* logger = nullptr;
   WiFiUDP *udp;
-  static Discovering *instance;
-  Discovering();
 public:
+  Discovering(Logger*);
   void init();
   void loop();
-  static Discovering *getInstance();
 };
 
 #endif

@@ -10,33 +10,38 @@
 #include "../task/Task.h"
 #include "../servo/ServoController.h"
 #include "../logger/Logger.h"
+#include "../time/RTC.h"
 
 class Cron {
 private:
+  RTC* rtc = nullptr;
+  Logger* logger = nullptr;
+  ServoController* servoController = nullptr;
   std::vector<Task> task;
   unsigned long lastTickTime;
   boolean ntpTimeActive;
   unsigned long ntpTimeCheck;
 
-  boolean checkTaskTime(Task,time_t);
+  boolean checkTaskTime(Task,std::tm);
   void readConfig();
   void writeConfig();
 
-  static Cron *instance;
-  Cron();
 
 public:
+  Cron(RTC*,Logger*,ServoController*);
   void clear(){
     this->task.clear();
     writeConfig();
   }
   void init();
   String getStr();
-  static Cron *getInstance();
+
   void loop();
   boolean addTask(Task);
   boolean delTask(unsigned int);
   boolean editTask(unsigned int, unsigned int);
+
+
 };
 
 #endif
