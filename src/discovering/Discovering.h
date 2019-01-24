@@ -1,5 +1,5 @@
 #ifndef discovering_h
-#define  discovering_h
+#define discovering_h
 
 #include <WiFiUdp.h>
 #include "../logger/Logger.h"
