@@ -10,15 +10,14 @@
 #include "../task/Task.h"
 #include "../servo/ServoController.h"
 #include "../logger/Logger.h"
+#include "../time/RTC.h"
 
 class Cron {
 private:
   std::vector<Task> task;
   unsigned long lastTickTime;
-  boolean ntpTimeActive;
-  unsigned long ntpTimeCheck;
 
-  boolean checkTaskTime(Task,time_t);
+  boolean checkTaskTime(Task,std::tm);
   void readConfig();
   void writeConfig();
 

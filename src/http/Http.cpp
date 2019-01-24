@@ -17,8 +17,11 @@ void HTTP::init(){
   this->http->on("/task/edit", std::bind(&HTTP::task_edit_handler, this));
   this->http->on("/task/del", std::bind(&HTTP::task_del_handler, this));
 
+  this->http->on("/time", std::bind(&HTTP::timeHandler, this));
+  this->http->on("/time/ntp", std::bind(&HTTP::ntpHandler, this));
+
   this->http->on("/log", std::bind(&HTTP::log_handler, this));
-  this->http->on("/time", std::bind(&HTTP::time_handler, this));
+  // this->http->on("/time", std::bind(&HTTP::time_handler, this));
   this->http->on("/info", [this]() {
     String str="";
     str += "heap = ";
@@ -29,7 +32,7 @@ void HTTP::init(){
   this->http->on("/available_networks", std::bind(&HTTP::available_networks_handler, this));
   this->http->on("/wifi", HTTP_POST, std::bind(&HTTP::connect_wifi_handler, this));
   this->http->on("/wifi", HTTP_GET, std::bind(&HTTP::info_wifi_handler, this));
-  // this->http->on("/time", std::bind(&HTTP::time_handler, this));
+
   this->http->on("/restart", std::bind(&HTTP::restart_handler, this));
 
   this->http->on("/list", HTTP_GET, std::bind(&HTTP::FSFileList, this));
@@ -313,18 +316,31 @@ void HTTP::info_wifi_handler(){
   this->http->send(400, "text / plain", WiFi.localIP().toString());
 }
 
-void HTTP::time_handler(){
-  if (this->http->argName(0) == "time") {
-    this->http->send(200, "application/json", Time::getInstance()->getT(this->http->arg("time").toInt()));
-  }
-  if (this->http->argName(0) == "ntp") {
-    if(Time::getInstance()->GetNTP("pool.ntp.org")){
-      this->http->send(200, "application/json", "success");
-    }
-    this->http->send(200, "application/json", "fail");
-  }
-  this->http->send(200, "application/json", Time::getInstance()->getTime());
+void HTTP::timeHandler(){
+  // if (this->http->argName(0) == "time") {
+  //   this->http->send(200, "application/json", Time::getInstance()->getT(this->http->arg("time").toInt()));
+  // }
+  // if (this->http->argName(0) == "ntp") {
+  //   if(Time::getInstance()->GetNTP("pool.ntp.org")){
+  //     this->http->send(200, "application/json", "success");
+  //   }
+  //   this->http->send(200, "application/json", "fail");
+  // }
+  std::tm time;
+  time = RTC::getTime();
+  this->http->send(200, "application/json", strtok(asctime(&time), "\n"));
 }
+
+void HTTP::ntpHandler(){
+  if (this->http->argName(0) == "server" && this->http->argName(1) == "offset") {
+    if(NTP::synchronize(this->http->arg("server"),this->http->arg("offset").toInt())){
+      this->http->send(200, "application/json", "Success synchronization from NTP server");
+    }
+    this->http->send(500, "text / plain", "Error synchronization from NTP server");
+  }
+  this->http->send(400, "text / plain", "Bad Request");
+}
+
 HTTP* HTTP::instance = nullptr;
 
 HTTP* HTTP::getInstance(){

@@ -6,7 +6,9 @@
 #include "../servo/ServoController.h"
 #include "../cron/Cron.h"
 #include "../logger/Logger.h"
-#include "../time/Time.h"
+#include "../time/RTC.h"
+#include "../time/NTP.h"
+
 #include <FS.h>
 
 class HTTP {
@@ -27,7 +29,8 @@ private:
   void connect_wifi_handler();
   void info_wifi_handler();
   void feed_handler();
-  void time_handler();
+  void timeHandler();
+  void ntpHandler();
 
   String FSContentType(String);
   boolean FSFileRead(String);

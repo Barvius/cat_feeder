@@ -7,7 +7,7 @@
 #include "http/Http.h"
 #include "servo/ServoController.h"
 #include "wireless/Wireless.h"
-#include "time/Time.h"
+#include "time/RTC.h"
 #include "discovering/Discovering.h"
 
 // void ConnectWiFi() {
@@ -42,17 +42,17 @@ void UpdateFirmware() {
 
 void setup() {
   Serial.begin(115200);
+  RTC::init();
   ServoController::getInstance()->init();
   Wireless::getInstance()->init();
-  int res = WiFi.waitForConnectResult();
-  if(res == WL_CONNECTED){
+  if(WiFi.waitForConnectResult() == WL_CONNECTED){
     UpdateFirmware();
   }
   // Time::configTZ(3);
   Cron::getInstance()->init();
   HTTP::getInstance()->init();
   Discovering::getInstance()->init();
-  Time::getInstance()->getTime();
+  // Time::getInstance()->getTime();
 }
 
 void loop() {

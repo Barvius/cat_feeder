@@ -3,7 +3,7 @@
 
 #include "Arduino.h"
 #include <ctime>
-//#include "../Time/Time.h"
+#include "../time/RTC.h"
 
 class Logger {
 private:
@@ -17,8 +17,10 @@ public:
   void writeLn(String);
   String getLog();
   String getCurrentTime(){
-    time_t tm = time(nullptr);
-    return strtok(ctime(&tm), "\n");
+    // time_t tm = time(nullptr);
+    std::tm time;
+    time = RTC::getTime();
+    return strtok(asctime(&time), "\n");
   }
 };
 #endif
