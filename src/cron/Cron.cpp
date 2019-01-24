@@ -1,7 +1,7 @@
 #include "Cron.h"
 
 Cron::Cron(){
-  this->lastTickTime = (60 - RTC::getTime().tm_sec) * 1000;
+  this->lastTickTime = RTC::getTime().tm_sec * 1000;
 }
 
 void Cron::init(){
